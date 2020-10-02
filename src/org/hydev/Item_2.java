@@ -1,5 +1,8 @@
 package org.hydev;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 // 第 2 条：遇到多个构造器参数时要考虑使用构建器.
 public class Item_2 {
     @SuppressWarnings({"InnerClassMayBeStatic", "FieldCanBeLocal"})
@@ -111,5 +114,73 @@ class FinalNutritionFacts {
         this.fat = builder.fat;
         this.sodium = builder.sodium;
         this.carbohydrate = builder.carbohydrate;
+    }
+}
+
+// [V] Builder 的思想是，将必须参数委托给 Builder 的构造器.
+
+abstract class Pizza {
+    public enum Topping {HAM, MUSHROOM, ONION, PEPPER, SAUSAGE}
+
+    final Set<Topping> toppings;
+
+    Pizza(Builder<?> builder) {
+        // 进行保护性拷贝 clone()，防止恶意子类修改 toppings.
+        toppings = builder.toppings.clone();
+    }
+
+    abstract static class Builder<T extends Builder<T>> {
+        // 由于上面进行了保护性拷贝，所以这里不可用接口引用对象.
+        EnumSet<Topping> toppings = EnumSet.noneOf(Topping.class);
+
+        // 类型参数 T 是 Builder，故应该返回子类自身，这里用 self() 方法来模拟.
+        public T addTopping(Topping topping) {
+            toppings.add(topping);
+            return self();
+        }
+
+        // 子类应覆盖此方法，并返回自身（Builder 的子类）.
+        protected abstract T self();
+
+        abstract Pizza build();
+    }
+}
+
+class NyPizza extends Pizza {
+    public enum Size {SMALL, MEDIUM, LARGE}
+
+    @SuppressWarnings("FieldCanBeLocal")
+    // size 是子类 Pizza 中特有的域，同样被委托给 Builder 的构造器.
+    private final Size size;
+
+    public static class Builder extends Pizza.Builder<Builder> {
+        private final Size size;
+
+        // 构建 NyPizza.Builder 时，需要制定特有参数 size，将会传递给 NyPizza.
+        public Builder(Size size) {
+            this.size = size;
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+
+        @Override
+        NyPizza build() {
+            return new NyPizza(this);
+        }
+    }
+
+    NyPizza(Builder builder) {
+        super(builder);
+
+        // 从 Builder 获取到 NyPizza 的附加参数 size.
+        size = builder.size;
+    }
+
+    public static void main(String[] args) {
+        NyPizza nyPizza = new NyPizza.Builder(Size.SMALL)
+                .addTopping(Topping.SAUSAGE).addTopping(Topping.ONION).build();
     }
 }

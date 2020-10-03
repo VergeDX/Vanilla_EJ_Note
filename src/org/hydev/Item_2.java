@@ -77,6 +77,7 @@ class FinalNutritionFacts {
         // 这些是必选参数.
         private int servingSize;
         private int servings;
+
         // 这些是可选参数.
         private int calories = 0;
         private int fat = 0;

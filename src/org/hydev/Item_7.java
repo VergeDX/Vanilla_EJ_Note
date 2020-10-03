@@ -41,6 +41,4 @@ public class Item_7 {
     // 这类问题的修复方法很简单：一旦对象引用已经过期，只需清空这些引用即可.
     // Object result = elements[--size];
     // elements[size] = null;
-
-    // 
 }

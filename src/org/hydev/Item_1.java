@@ -12,10 +12,10 @@ public class Item_1 {
         // 静态工厂，返回的是 Boolean 中的引用.
         Boolean boxingBoolean = Boolean.valueOf("true");
 
-        // 【优势】1. 它们有名称.
+        //【优势】1. 它们有名称.
         BigInteger bigInteger = BigInteger.probablePrime(7, new Random());
 
-        // 【优势】2. 调用时无需创建对象.
+        //【优势】2. 调用时无需创建对象.
         // 在 Boolean.valueOf() 返回的是内部对象，提升性能.
 
         //【优势】3. 可以返回任意子类型的对象.

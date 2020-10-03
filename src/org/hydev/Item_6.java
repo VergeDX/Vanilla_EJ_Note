@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-// 第 6 条：避免避免创建不必要的对象.
+// 第 6 条：避免创建不必要的对象.
 public class Item_6 {
     // 一般来说，最好能重用单个对象.
     // 如果对象是不可变的，它就始终可以被重用.
@@ -15,7 +15,7 @@ public class Item_6 {
     private static final Pattern SOME_REGEX = Pattern.compile("some regex");
 
     // "bikini" 本身就是一个 String 实例.
-    String s = "bikini";
+    String s = new String("bikini");
 
     // 对于既有构造器，又有工厂方法的不可变类，通常优先使用工厂方法.
     Boolean factoryBoolean = Boolean.valueOf("true");

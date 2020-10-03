@@ -57,22 +57,36 @@ class FinalNutritionFacts {
     private final int sodium;
     private final int carbohydrate;
 
+    // 私有的构造器，通过 Builder 来构建自身.
+    private FinalNutritionFacts(Builder builder) {
+        this.servingSize = builder.servingSize;
+        this.servings = builder.servings;
+        this.calories = builder.calories;
+        this.fat = builder.fat;
+        this.sodium = builder.sodium;
+        this.carbohydrate = builder.carbohydrate;
+    }
+
+    public static void main(String[] args) {
+        FinalNutritionFacts finalNutritionFacts = new Builder(240, 8)
+                .calories(100).sodium(35).carbohydrate(27).build();
+    }
+
     @SuppressWarnings("FieldMayBeFinal")
     public static class Builder {
         // 这些是必选参数.
         private int servingSize;
         private int servings;
-
-        public Builder(int servingSize, int servings) {
-            this.servingSize = servingSize;
-            this.servings = servings;
-        }
-
         // 这些是可选参数.
         private int calories = 0;
         private int fat = 0;
         private int sodium = 0;
         private int carbohydrate = 0;
+
+        public Builder(int servingSize, int servings) {
+            this.servingSize = servingSize;
+            this.servings = servings;
+        }
 
         // 这些是可选参数的 Builder，它们都返回 Builder 以组成流式 API.
         public Builder calories(int calories) {
@@ -100,34 +114,19 @@ class FinalNutritionFacts {
             return new FinalNutritionFacts(this);
         }
     }
-
-    public static void main(String[] args) {
-        FinalNutritionFacts finalNutritionFacts = new Builder(240, 8)
-                .calories(100).sodium(35).carbohydrate(27).build();
-    }
-
-    // 私有的构造器，通过 Builder 来构建自身.
-    private FinalNutritionFacts(Builder builder) {
-        this.servingSize = builder.servingSize;
-        this.servings = builder.servings;
-        this.calories = builder.calories;
-        this.fat = builder.fat;
-        this.sodium = builder.sodium;
-        this.carbohydrate = builder.carbohydrate;
-    }
 }
 
 // [V] Builder 的思想是，将必须参数委托给 Builder 的构造器.
 
 abstract class Pizza {
-    public enum Topping {HAM, MUSHROOM, ONION, PEPPER, SAUSAGE}
-
     final Set<Topping> toppings;
 
     Pizza(Builder<?> builder) {
         // 进行保护性拷贝 clone()，防止恶意子类修改 toppings.
         toppings = builder.toppings.clone();
     }
+
+    public enum Topping {HAM, MUSHROOM, ONION, PEPPER, SAUSAGE}
 
     abstract static class Builder<T extends Builder<T>> {
         // 由于上面进行了保护性拷贝，所以这里不可用接口引用对象.
@@ -147,11 +146,23 @@ abstract class Pizza {
 }
 
 class NyPizza extends Pizza {
-    public enum Size {SMALL, MEDIUM, LARGE}
-
     @SuppressWarnings("FieldCanBeLocal")
     // size 是子类 Pizza 中特有的域，同样被委托给 Builder 的构造器.
     private final Size size;
+
+    NyPizza(Builder builder) {
+        super(builder);
+
+        // 从 Builder 获取到 NyPizza 的附加参数 size.
+        size = builder.size;
+    }
+
+    public static void main(String[] args) {
+        NyPizza nyPizza = new NyPizza.Builder(Size.SMALL)
+                .addTopping(Topping.SAUSAGE).addTopping(Topping.ONION).build();
+    }
+
+    public enum Size {SMALL, MEDIUM, LARGE}
 
     public static class Builder extends Pizza.Builder<Builder> {
         private final Size size;
@@ -170,17 +181,5 @@ class NyPizza extends Pizza {
         NyPizza build() {
             return new NyPizza(this);
         }
-    }
-
-    NyPizza(Builder builder) {
-        super(builder);
-
-        // 从 Builder 获取到 NyPizza 的附加参数 size.
-        size = builder.size;
-    }
-
-    public static void main(String[] args) {
-        NyPizza nyPizza = new NyPizza.Builder(Size.SMALL)
-                .addTopping(Topping.SAUSAGE).addTopping(Topping.ONION).build();
     }
 }

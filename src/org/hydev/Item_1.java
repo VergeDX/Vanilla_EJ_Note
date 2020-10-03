@@ -8,8 +8,6 @@ import java.util.Set;
 
 // 第 1 条：用静态工厂方法代替构造器.
 public class Item_1 {
-    enum AnEnum {}
-
     public static void main(String[] args) {
         // 静态工厂，返回的是 Boolean 中的引用.
         Boolean boxingBoolean = Boolean.valueOf("true");
@@ -38,4 +36,6 @@ public class Item_1 {
         // 一些惯用名称：from, if, valueOf, instance / getInstance, create / new Instance,
         // getType, newType, type.
     }
+
+    enum AnEnum {}
 }

@@ -41,4 +41,28 @@ public class Item_7 {
     // 这类问题的修复方法很简单：一旦对象引用已经过期，只需清空这些引用即可.
     // Object result = elements[--size];
     // elements[size] = null;
+
+    // [V] Vector#remove 方法中，手动清空了过期的引用.
+    // [V] 原注释：Let gc do its work.
+
+    // 清空对象引用应该是一种例外，而不是一种规范行为.
+    // 只要是类自己管理内存，程序员就应该警惕内存泄露问题.
+
+    // 内存泄露的另一个常见来源是缓存.
+    // 只要在缓存之外存在对某个项的键的引用，该项就有意义，那么就可以用 WeakHashMap 代表缓存；
+    // 当缓存中的项过期之后，它们就自动被删除.
+    // 记住只有当所要的缓存的生命周期是由该键的外部引用而不是由值决定时，WeakHashMap 才有用处.
+
+    // [V] An entry in a WeakHashMap will automatically be removed when its key is no longer in ordinary use.
+
+    // 对于复杂的缓存，必须直接使用 java.lang.ref.
+    // [V] https://developer.ibm.com/zh/technologies/java/articles/j-lo-langref/
+
+    // 内存泄露的第三个常见来源是监听器和其他回调.
+    // 如果你实现了一个 API，客户端在这个 API 中注册回调，却没有显式地取消注册，
+    // 那么除非你采取某些动作，否则它们就会不断地堆积起来.
+
+    // [V] 这是由于，Callback 中要保留调用者的引用；当调用者不再被需要时，该引用会防止垃圾回收.
+
+    // 确保回调立刻被当做垃圾回收的最佳方法是只保存它们的弱引用，例如，只将它们保存成 WeakHashMap 中的键.
 }

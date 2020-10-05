@@ -1,4 +1,4 @@
-package org.hydev;
+package org.hydev.chapter_2;
 
 import java.io.Serializable;
 

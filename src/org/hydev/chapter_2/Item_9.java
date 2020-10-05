@@ -1,4 +1,4 @@
-package org.hydev;
+package org.hydev.chapter_2;
 
 // 第 9 条：try - with - resources 优先于 try - finally.
 public class Item_9 {

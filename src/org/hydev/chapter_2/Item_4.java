@@ -1,4 +1,4 @@
-package org.hydev;
+package org.hydev.chapter_2;
 
 // 第 4 条：通过私有构造器强化不可实例化的能力.
 public class Item_4 {

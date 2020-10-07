@@ -40,7 +40,7 @@ public class Item_10 {
     // 1. 自反性：对象必须等于其自身. 假如违反了这一条，然后把该类的实例添加到集合中，该集合的 contains 方法将果断地告诉你，该集合不包含你刚刚添加的实例.
     // 2. 对称性：任何两个对象对于 "它们是否相等" 的问题都必须保持一致. 若无意中违反这一条，这种情形倒是不难想象.
     // 例如下面的类，它实现了一个区分大小写的字符串.
-    static final class CaseInsensitivityString {
+    public static final class CaseInsensitivityString {
         private final String s;
 
         CaseInsensitivityString(String s) {
@@ -154,5 +154,55 @@ public class Item_10 {
     // [V] https://stackoverflow.com/questions/33992000/canonical-form-of-field
     // [V] CaseInsensitivityString 中应保存一个全大写 / 全小写的 "规范形式"，降低后续比较中的开销.
 
-    //
+    // 域的比较顺序可能会影响 equals 方法的性能. 为了获得最佳的性能，应该最先比较最有可能不一致的域，或者是开销最低的域，最理想的情况是两个条件同时满足的域.
+    // 不应该比较那些不属于对象逻辑状态的域，例如用于同步操作的 Lock 域. 也不需要比较衍生域，因为这些域可以由 "关键域" 计算获得，但是这样做有可能提高 equals 方法的性能.
+    // 如果衍生域代表了整个对象的综合描述，比较这个域可以节省在比较失败时去比较实际数据所需要的开销.
+    // 例如，假设有一个 Polygon 类，并缓存了该面积. 如果两个多边形有着不同的面积，就没有必要去比较它们的边和顶点.
+
+    // 在编写完 equals 方法之后，应该问自己三个问题：它是否是对称的、传递的、一致的？并且不要只是自问，还要编写单元测试来检验这些特性.
+    // 根据上面的诀窍构建 equals 方法的具体例子. 请看下面这个简单的 PhoneNumber 类：
+    public static final class PhoneNumber {
+        private final short areaCode, prefix, lineNum;
+
+        public PhoneNumber(short areaCode, short prefix, short lineNum) {
+            this.areaCode = rangeCheck(areaCode, 999, "area code");
+            this.prefix = rangeCheck(prefix, 999, "prefix");
+            this.lineNum = rangeCheck(lineNum, 9999, "line num");
+        }
+
+        private static short rangeCheck(int val, int max, String arg) {
+            if (val < 0 || val > max)
+                throw new IllegalArgumentException(arg + ":" + val);
+            return (short) val;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (!(obj instanceof PhoneNumber)) return false;
+
+            PhoneNumber pn = (PhoneNumber) obj;
+            return pn.lineNum == lineNum && pn.prefix == prefix && pn.areaCode == areaCode;
+        }
+    }
+
+    // 下面是最后的一些告诫：
+    // 1. 覆盖 equals 时总要覆盖 hashCode（详见第 11 条）.
+    // 2. 不要企图让 equals 方法过于智能.
+    // 如果只是简单地测试域中的值是否相等，则不难做到遵守 equals 约定.
+    // 如果想过度地去追求各种等价关系，则很容易陷入麻烦之中. 把任何一种别名形式考虑到等价的范围内，往往不会是个好主意.
+    // 例如，File 类不应该试图把指向同一个文件的符号链接当做相等的对象来看待. 所幸 File 类没有这样做.
+
+    // 3. 不要讲 equals 声明中的 Object 对象替换为其他的类型.
+    // 程序员编写出下面这样的 equals 方法并不鲜见，这会使程序员画上数个小时都搞不清为什么它不能正常工作：
+    // public boolean equals(MyClass o) { ... }
+    // 问题在于，这个方法并没有覆盖 Object.equals，因为它的参数应该是 Object 类型，相反，它重载了 Object.equals.
+
+    // 编写和测试 equals（及 hashCode）方法都是十分繁琐的，得到的代码也很琐碎. 代替手工编写和测试这些方法的最佳途径，是使用 Google 开源的 AutoValue 框架，
+    // 它会自动替你生成这些方法，通过类中的单个注解就能触发. 在大多数情况下，AutoValue 生成的方法本质上与你亲自编写的方法是一样的.
+
+    // IDE 也有工具可以自动生成 equals 和 hashCode 方法，但得到的源代码比使用 AutoValue 的更加冗长，可读性也更差，它无法自动追踪类中的变化，因此需要进行测试.
+    // 也就是说，让 IDE 生成 equals（及 hashCode）方法，通常优先于手工实现它们，因为 IDE 不会犯粗心的错误，但是程序员会犯错.
+
+    // [V] IDEA (2020.2.3) 生成 equals 和 hashCode 方法后，再向类中添加字段，IDEA 不会提示说需要重新生成.
 }

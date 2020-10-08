@@ -122,7 +122,7 @@ public class Item_10 {
     // 这样会导致 URL equals 方法违反 equals 约定，在实践中有可能引发一些问题. URL equals 方法的行为是一个大错误且不应被模仿.
 
     // [V] URL equals 方法中的注释：
-    // * Note: The defined behavior for {@code equals} is known to be inconsistent with virtual hosting in HTTP.
+    // * Note: The defined behavior for equals is known to be inconsistent with virtual hosting in HTTP.
 
     // 5. 非空性：最后一个要求没有正式名称，我姑且称它为 "非空性"，意思是所有的对象都不能等于 null.
     // 尽管很难想象在什么情况下 o.equals(null) 的调用会意外地返回 true，但是意外抛出 NullPointerException 异常的情形却不难想象.

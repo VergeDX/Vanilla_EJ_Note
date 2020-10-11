@@ -19,7 +19,7 @@ public class Item_11 {
     // 因没有覆盖 hashCode 而违反的关键约定是第 2 条：相等的对象必须具有相同的散列码.
     // [V] 如果仅仅覆盖了 equals，而没有覆盖 hashCode，将会导致如下的错误行为：
     // Map<PhoneNumber, String> m = new HashMap<>();
-    // m.put(new PhoneNumber(707, 867, 5309, "Jenny");
+    // m.put(new PhoneNumber(707, 867, 5309), "Jenny");
     // 此时，你可能期望 m.get(new PhoneNumber(707, 867, 5309)) 会返回 "Jenny"，但它实际上返回的是 null.
     // 由于 PhoneNumber 类没有覆盖 hashCode 方法，从而导致两个相等的实例具有不相等的散列码，违反了 hashCode 的约定.
     // 因此，put 方法把电话号码对象存放在一个散列桶中，get 方法却在另一个散列桶中查找这个电话号码.
